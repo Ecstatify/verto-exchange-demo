@@ -38,9 +38,11 @@ import {
   Bot,
   Settings,
   Save,
-  Smartphone
+  Smartphone,
+  LogOut
 } from 'lucide-react';
 import Onboarding from './Onboarding';
+import Signout from './Signout';
 
 // --- API HELPER ---
 const callGemini = async (prompt, apiKey) => {
@@ -671,7 +673,7 @@ const Marketplace = ({ tier, trustScore, onStartTrade, onStartChat, onShowSecuri
 };
 
 
-const Profile = ({ userTier, trustScore, onOpenVerify, onOpenDispute, onShowSecurity, forceMobile }) => (
+const Profile = ({ userTier, trustScore, onOpenVerify, onOpenDispute, onShowSecurity, onSignOut, forceMobile }) => (
   <div className="min-h-screen bg-zinc-950 pt-8 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
     <div className={`mx-auto px-4 ${forceMobile ? 'max-w-full' : 'max-w-4xl'}`}>
       <div className="relative bg-zinc-900 border border-zinc-800 p-6 mb-6 overflow-hidden group hover:border-emerald-500/30 transition-all duration-500">
@@ -719,53 +721,64 @@ const App = () => {
     setChatItem(item); // Open Chat
   };
 
+  const handleSignOut = () => {
+    setActiveTab('signout');
+  };
+
+  const handleReconnect = () => {
+    setActiveTab('home');
+    setShowOnboarding(true);
+  };
+
   return (
     <>
       <div className={`bg-zinc-950 min-h-screen text-zinc-200 font-sans selection:bg-emerald-500 selection:text-black flex flex-col transition-all duration-500 ease-in-out ${isMobileSimulated ? 'max-w-[420px] h-[844px] mx-auto my-8 rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-zinc-800 transform translate-z-0' : 'w-full'}`}>
         {showOnboarding && <Onboarding onComplete={() => setShowOnboarding(false)} />}
         <div className={isMobileSimulated ? "h-full w-full overflow-y-auto overflow-x-hidden scrollbar-hide relative" : "flex flex-col min-h-screen"}>
-          <nav className="sticky top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 transition-all duration-300">
-            <div className={`mx-auto h-14 flex items-center justify-between ${isMobileSimulated ? 'px-4' : 'max-w-7xl px-4 sm:px-6 lg:px-8 h-16'}`}>
-              <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setActiveTab('home')}>
-                <div className={`bg-emerald-500 flex items-center justify-center transform rotate-45 group-hover:rotate-90 transition-transform duration-500 ${isMobileSimulated ? 'w-6 h-6' : 'w-8 h-8'}`}><span className={`transform -rotate-45 group-hover:-rotate-90 transition-transform duration-500 font-bold text-black ${isMobileSimulated ? 'text-xs' : ''}`}>V</span></div>
-                {!isMobileSimulated && <span className="font-bold tracking-tighter text-white group-hover:text-emerald-400 transition-colors">VERTO<span className="text-zinc-600 group-hover:text-zinc-400">EXCHANGE</span></span>}
+          {activeTab !== 'signout' && (
+            <nav className="sticky top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 transition-all duration-300">
+              <div className={`mx-auto h-14 flex items-center justify-between ${isMobileSimulated ? 'px-4' : 'max-w-7xl px-4 sm:px-6 lg:px-8 h-16'}`}>
+                <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setActiveTab('home')}>
+                  <div className={`bg-emerald-500 flex items-center justify-center transform rotate-45 group-hover:rotate-90 transition-transform duration-500 ${isMobileSimulated ? 'w-6 h-6' : 'w-8 h-8'}`}><span className={`transform -rotate-45 group-hover:-rotate-90 transition-transform duration-500 font-bold text-black ${isMobileSimulated ? 'text-xs' : ''}`}>V</span></div>
+                  {!isMobileSimulated && <span className="font-bold tracking-tighter text-white group-hover:text-emerald-400 transition-colors">VERTO<span className="text-zinc-600 group-hover:text-zinc-400">EXCHANGE</span></span>}
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* Desktop nav links (hidden when simulating mobile) */}
+                  {!isMobileSimulated && (
+                    <div className="hidden md:flex items-center gap-8 mr-4">
+                      {['Home', 'Marketplace', 'Profile'].map(tab => (
+                        <button
+                          key={tab}
+                          onClick={() => setActiveTab(tab.toLowerCase())}
+                          className={`text-xs uppercase font-bold tracking-widest hover:text-emerald-400 transition-colors relative group ${activeTab === tab.toLowerCase() ? 'text-emerald-400' : 'text-zinc-500'}`}
+                        >
+                          {tab}
+                          <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeTab === tab.toLowerCase() ? 'w-full' : ''}`}></span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {/* Mobile simulator bottom tab bar placeholder - actual tabs */}
+                  {isMobileSimulated && (
+                    <div className="flex items-center gap-1">
+                      {[{ name: 'Home', icon: 'H' }, { name: 'Marketplace', icon: 'M' }, { name: 'Profile', icon: 'P' }].map(tab => (
+                        <button
+                          key={tab.name}
+                          onClick={() => setActiveTab(tab.name.toLowerCase())}
+                          className={`text-[10px] uppercase font-bold px-2 py-1 rounded transition-colors ${activeTab === tab.name.toLowerCase() ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-500 hover:text-white'}`}
+                        >
+                          {tab.name.substring(0, 4)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <button onClick={() => setShowSettings(true)} className="text-zinc-500 hover:text-white transition-colors p-1">
+                    <Settings size={isMobileSimulated ? 16 : 20} />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                {/* Desktop nav links (hidden when simulating mobile) */}
-                {!isMobileSimulated && (
-                  <div className="hidden md:flex items-center gap-8 mr-4">
-                    {['Home', 'Marketplace', 'Profile'].map(tab => (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab.toLowerCase())}
-                        className={`text-xs uppercase font-bold tracking-widest hover:text-emerald-400 transition-colors relative group ${activeTab === tab.toLowerCase() ? 'text-emerald-400' : 'text-zinc-500'}`}
-                      >
-                        {tab}
-                        <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 transition-all duration-300 group-hover:w-full ${activeTab === tab.toLowerCase() ? 'w-full' : ''}`}></span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {/* Mobile simulator bottom tab bar placeholder - actual tabs */}
-                {isMobileSimulated && (
-                  <div className="flex items-center gap-1">
-                    {[{ name: 'Home', icon: 'H' }, { name: 'Marketplace', icon: 'M' }, { name: 'Profile', icon: 'P' }].map(tab => (
-                      <button
-                        key={tab.name}
-                        onClick={() => setActiveTab(tab.name.toLowerCase())}
-                        className={`text-[10px] uppercase font-bold px-2 py-1 rounded transition-colors ${activeTab === tab.name.toLowerCase() ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-500 hover:text-white'}`}
-                      >
-                        {tab.name.substring(0, 4)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <button onClick={() => setShowSettings(true)} className="text-zinc-500 hover:text-white transition-colors p-1">
-                  <Settings size={isMobileSimulated ? 16 : 20} />
-                </button>
-              </div>
-            </div>
-          </nav>
+            </nav>
+          )}
 
 
           <main className="flex-grow">
@@ -787,13 +800,17 @@ const App = () => {
                 onOpenVerify={() => setShowVerify(true)}
                 onOpenDispute={() => setShowDispute(true)}
                 onShowSecurity={() => setShowSecurityModal(true)}
+                onSignOut={handleSignOut}
                 forceMobile={isMobileSimulated}
               />
             )}
+            {activeTab === 'signout' && <Signout onReconnect={handleReconnect} />}
           </main>
-          <footer className="border-t border-zinc-900 py-8 bg-zinc-950 text-center">
-            <p className="text-zinc-600 text-xs font-mono">© 2025 VERTO EXCHANGE. DESIGNED FOR CEBU.</p>
-          </footer>
+          {activeTab !== 'signout' && (
+            <footer className="border-t border-zinc-900 py-8 bg-zinc-950 text-center">
+              <p className="text-zinc-600 text-xs font-mono">© 2025 VERTO EXCHANGE. DESIGNED FOR CEBU.</p>
+            </footer>
+          )}
         </div>
 
         <VerificationModal
