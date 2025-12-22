@@ -688,6 +688,9 @@ const Profile = ({ userTier, trustScore, onOpenVerify, onOpenDispute, onShowSecu
         <div className="bg-zinc-900 border border-zinc-800 p-4 hover:-translate-y-1 transition-transform duration-300"><h3 className="text-white font-bold mb-3 flex items-center gap-2 text-sm"><Lock size={14} className="text-emerald-500" /> Active Escrows</h3><div className="text-center py-6 border border-dashed border-zinc-800 rounded"><p className="text-zinc-500 text-xs">No active transactions.</p><button className="text-emerald-500 text-[10px] font-bold uppercase mt-2 hover:underline">Start Shopping</button></div></div>
         <div className="bg-zinc-900 border border-zinc-800 p-4 hover:-translate-y-1 transition-transform duration-300"><h3 className="text-white font-bold mb-3 flex items-center gap-2 text-sm"><HelpCircle size={14} className="text-emerald-500" /> Support</h3><p className="text-zinc-400 text-xs mb-4">Need help? Submit a ticket for assistance.</p><button onClick={onOpenDispute} className="w-full border border-zinc-700 hover:bg-zinc-800 text-white text-[10px] font-bold uppercase py-2.5 transition-all active:scale-95 flex items-center justify-center gap-2"><MessageCircle size={12} /> Submit Ticket</button></div>
       </div>
+      <button onClick={onSignOut} className="mt-6 w-full bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-red-400 hover:border-red-900/50 hover:bg-red-900/10 text-[10px] font-bold uppercase tracking-widest py-3 transition-all active:scale-95 flex items-center justify-center gap-2 rounded">
+        <LogOut size={12} /> Sign Out Securely
+      </button>
     </div>
   </div>
 );
